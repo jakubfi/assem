@@ -21,16 +21,15 @@
 #include <ctype.h>
 
 #include "keywords.h"
-#include "parser_classic.h"
-#include "parsers.h"
+#include "parser.h"
 #include "elements.h"
 
-void c_yyerror(char *, ...);
+void yyerror(char *, ...);
 char comment_buf[1024];
 int comment_pos;
+extern int parser_lineno;
 
-
-#define YY_USER_ACTION	parser_lineno = c_yylineno;
+#define YY_USER_ACTION	parser_lineno = yylineno;
 
 %}
 
@@ -58,41 +57,41 @@ echars			[\)\.]
 
 %%
 
-<INITIAL,is_id>{nl}	{ c_yylval.val.s = strdup("\n"); return NL; }
+<INITIAL,is_id>{nl}	{ yylval.val.s = strdup("\n"); return NL; }
 
 <INITIAL,is_id>\[ { BEGIN(in_comment); comment_pos = 0; }
 <in_comment>{
-[^\]\n]+	{ comment_pos += sprintf(comment_buf+comment_pos, "%s", c_yytext); }
-\n			{ comment_pos += sprintf(comment_buf+comment_pos, "%s", c_yytext); }
-\]			{ BEGIN(INITIAL); c_yylval.val.s = strdup(comment_buf); return CMT; }
+[^\]\n]+	{ comment_pos += sprintf(comment_buf+comment_pos, "%s", yytext); }
+\n			{ comment_pos += sprintf(comment_buf+comment_pos, "%s", yytext); }
+\]			{ BEGIN(INITIAL); yylval.val.s = strdup(comment_buf); return CMT; }
 }
 {comment_output} {
-	c_yylval.val.s = strdup(c_yytext);
+	yylval.val.s = strdup(yytext);
 	return CMT;
 }
 
 {oct} {
-	c_yylval.val.v = strtol(c_yytext, NULL, 8);
-	c_yylval.val.s = strdup(c_yytext);
+	yylval.val.v = strtol(yytext, NULL, 8);
+	yylval.val.s = strdup(yytext);
 	return VALUE;
 }
 {dec} {
-	c_yylval.val.v = strtol(c_yytext, NULL, 10);
-	c_yylval.val.s = strdup(c_yytext);
+	yylval.val.v = strtol(yytext, NULL, 10);
+	yylval.val.s = strdup(yytext);
 	return VALUE;
 }
 {dchar} {
-	c_yylval.val.v = 0;
-	if (c_yytext[1] != '!')	c_yylval.val.v += c_yytext[1]*256;
-	if (c_yytext[2] != '!')	c_yylval.val.v += c_yytext[2];
-	c_yylval.val.s = strdup(c_yytext);
+	yylval.val.v = 0;
+	if (yytext[1] != '!')	yylval.val.v += yytext[1]*256;
+	if (yytext[2] != '!')	yylval.val.v += yytext[2];
+	yylval.val.s = strdup(yytext);
 	return VALUE;
 }
 {r40} {
 	int val = 0;
 	int mul = 1600;
-	char *s = c_yytext+1;
-	c_yylval.val.v = 0;
+	char *s = yytext+1;
+	yylval.val.v = 0;
 	while (*s) {
 		if ((*s >= 'A') && (*s <= 'Z')) {
 			val = *s - 64;
@@ -109,19 +108,19 @@ echars			[\)\.]
 		} else if (*s == '#') {
 			val = 39;
 		} else {
-			c_yyerror("wrong R-40 code: %s", c_yytext);
+			yyerror("wrong R-40 code: %s", yytext);
 			return YERR;
 		}
-		c_yylval.val.v += val*mul;
+		yylval.val.v += val*mul;
 		mul /= 40;
 		s++;
 	}
-	c_yylval.val.s = strdup(c_yytext);
+	yylval.val.s = strdup(yytext);
 	return VALUE;
 }
 {bitmask} {
 	int value = 0;
-	char *c = c_yytext+1;
+	char *c = yytext+1;
 	while (*c) {
 		switch (*c) {
 			case 'Z': value |= 1 << 15; break;
@@ -141,47 +140,47 @@ echars			[\)\.]
 			case '6': value |= 1 << 1; break;
 			case '7': value |= 1 << 0; break;
 			default:
-				c_yyerror("Unknown bit in bitmask: %c", *c);
+				yyerror("Unknown bit in bitmask: %c", *c);
 				break;
 		}
 		c++;
 	}
-	c_yylval.val.v = value;
-	c_yylval.val.s = strdup(c_yytext);
+	yylval.val.v = value;
+	yylval.val.s = strdup(yytext);
 	return VALUE;
 }
 {string} {
-	c_yylval.val.s = strndup(c_yytext+1, strlen(c_yytext)-2);
+	yylval.val.s = strndup(yytext+1, strlen(yytext)-2);
 	return STRING;
 }
 
-{chars} { return *c_yytext; }
-{echars} { BEGIN(INITIAL); return *c_yytext; }
+{chars} { return *yytext; }
+{echars} { BEGIN(INITIAL); return *yytext; }
 
 <is_id>{name} {
 	int copy = 7;
-	if (isalpha(*c_yytext)) copy = 6;
-	c_yylval.val.s = strndup(c_yytext, copy);
+	if (isalpha(*yytext)) copy = 6;
+	yylval.val.s = strndup(yytext, copy);
 	return IDENTIFIER;
 }
 
 {name}/{suffix_op} {
-	struct kw_t *op = get_op(mnemo_sel, c_yytext);
+	struct kw_t *op = get_op(mnemo_sel, yytext);
 	if (op) {
 		BEGIN(is_id);
-		c_yylval.val.v = op->opcode;
+		yylval.val.v = op->opcode;
 		return op->type;
 	} else {
-		c_yylval.val.s = strndup(c_yytext, 6);
+		yylval.val.s = strndup(yytext, 6);
 		return IDENTIFIER;
 	}
 }
 
 {pragma} {
 	BEGIN(is_id);
-	struct kw_t *pragma = get_pragma(syntax, c_yytext);
+	struct kw_t *pragma = get_pragma(mnemo_sel, yytext);
 	if (!pragma) {
-		c_yyerror("unknown pragma: %s", c_yytext);
+		yyerror("unknown pragma: %s", yytext);
 	} else {
 		return pragma->type;
 	}
@@ -189,22 +188,22 @@ echars			[\)\.]
 
 {identifier}/: {
 	int copy = 7;
-	if (isalpha(*c_yytext)) copy = 6;
-	c_yylval.val.s = strndup(c_yytext, copy);
+	if (isalpha(*yytext)) copy = 6;
+	yylval.val.s = strndup(yytext, copy);
 	return LABEL;
 }
 
 {identifier}/= {
 	int copy = 7;
-	if (isalpha(*c_yytext)) copy = 6;
-	c_yylval.val.s = strndup(c_yytext, copy);
+	if (isalpha(*yytext)) copy = 6;
+	yylval.val.s = strndup(yytext, copy);
 	return VAR;
 }
 
 {identifier} {
 	int copy = 7;
-	if (isalpha(*c_yytext)) copy = 6;
-	c_yylval.val.s = strndup(c_yytext, copy);
+	if (isalpha(*yytext)) copy = 6;
+	yylval.val.s = strndup(yytext, copy);
 	return IDENTIFIER;
 }
 
@@ -213,7 +212,7 @@ echars			[\)\.]
 
 %%
 
-int c_yywrap(void) {
+int yywrap(void) {
 	return 1;
 }
 

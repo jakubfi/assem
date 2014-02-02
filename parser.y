@@ -21,13 +21,13 @@
 #include <string.h>
 #include <strings.h>
 
-#include "parsers.h"
 #include "keywords.h"
 #include "dict.h"
 #include "elements.h"
 
-void c_yyerror(char *s, ...);
+void yyerror(char *s, ...);
 int yylex(void);
+int parser_lineno;
 
 %}
 
@@ -180,7 +180,7 @@ expr:
 zero:
 	VALUE {
 		if ($1.v != 0) {
-			c_yyerror("Invalid argument, should be '0'");
+			yyerror("Invalid argument, should be '0'");
 			YYABORT;
 		}
 		$$ = mknod_valstr(N_VAL, $1.v, $1.s);
@@ -250,7 +250,7 @@ maxlist:
 %%
 
 // -----------------------------------------------------------------------
-void c_yyerror(char *s, ...)
+void yyerror(char *s, ...)
 {
 	va_list ap;
 	va_start(ap, s);

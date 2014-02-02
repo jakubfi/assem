@@ -20,7 +20,6 @@
 #include <string.h>
 #include <getopt.h>
 
-#include "parsers.h"
 #include "keywords.h"
 #include "eval.h"
 #include "pprocess.h"
@@ -32,13 +31,16 @@ int dump_labels = 0;
 char *input_file = NULL;
 char *output_file = NULL;
 
+FILE *yyin;
+int yyparse();
+int yylex_destroy();
+
 // -----------------------------------------------------------------------
 void usage()
 {
 	printf("Usage: assem [options] <input.asm> [output]\n");
 	printf("Where options are:\n");
 	printf("   -k : use K-202 mnemonics (instead of MERA-400)\n");
-	printf("   -c : use classic ASSK/ASSM syntax (instead of modern)\n");
 	printf("   -l : write labels to output.lab file\n");
 	printf("   -p : write preprocessor output to output.pp.asm file\n");
 	printf("   -2 : use K-202 mnemonics in preprocessor output (instead of MERA-400)\n");
@@ -52,7 +54,6 @@ void parse_args(int argc, char **argv)
 {
 	mnemo_sel = MERA400;
 	pp_mnemo_sel = MERA400;
-	syntax = MODERN;
 	preprocessor = 0;
 	dump_labels = 0;
 	enable_debug = 0;
@@ -76,9 +77,6 @@ void parse_args(int argc, char **argv)
 				exit(0);
 			case 'k':
 				mnemo_sel = K202;
-				break;
-			case 'c':
-				syntax = CLASSIC;
 				break;
 			case 'p':
 				preprocessor = 1;
@@ -122,18 +120,19 @@ int main(int argc, char **argv)
 	parse_args(argc, argv);
 
 	// open input file
-	FILE *asm_source = fopen(argv[optind], "r");
-	if (!asm_source) {
+	yyin = fopen(argv[optind], "r");
+	if (!yyin) {
 		printf("Error: cannot open input file, exiting.\n");
 		exit(1);
 	}
 
 	// parse program
-	int res = parse(asm_source);
+	int res = yyparse();
 
-	fclose(asm_source);
+	fclose(yyin);
+	yylex_destroy();
 
-	if (res < 0) {
+	if (res != 0) {
 		printf("Cannot parse source, exiting.\n");
 		nodelist_drop(program);
 		exit(1);

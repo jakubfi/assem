@@ -23,7 +23,7 @@
 #include "nodes.h"
 #include "eval.h"
 #include "elements.h"
-#include "parser_modern.h"
+#include "parser.h"
 #include "keywords.h"
 
 struct nodelist_t *program;

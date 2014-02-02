@@ -20,7 +20,7 @@
 
 #include "nodes.h"
 #include "keywords.h"
-#include "parser_classic.h"
+#include "parser.h"
 
 int mnemo_sel = MERA400;
 
@@ -106,20 +106,20 @@ struct var_t extracodes[] = {
 };
 
 struct kw_t pragmas[] = {
-{ {".prog",		"PROG*"},		P_PROG,			N_PROG },
-{ {".finprog",	"FINPROG*"},	P_FINPROG,		N_FINPROG },
+{ {"",		"PROG*"},		P_PROG,			N_PROG },
+{ {"",	"FINPROG*"},	P_FINPROG,		N_FINPROG },
 { {".seg",		"SEG*"},		P_SEG,			N_SEG },
 { {".finseg",	"FINSEG*"},		P_FINSEG,		N_FINSEG },
 { {".macro",	"MACRO*"},		P_MACRO,		N_MACRO },
 { {".finmacro",	"FINMACRO*"},	P_FINMACRO,		N_FINMACRO },
 
-{ {".data",		""},			P_DATA,			N_ERR },
+{ {".word",		""},			P_DATA,			N_ERR },
 { {".equ",		""},			P_EQU,			N_VAR },
 { {".equ",		""},			P_EQU,			N_AVAR }, // for preprocessor
 { {"",		""},				0,		N_LABEL}, // for preprocessor
 { {".res",		"RES*"},		P_RES,			N_RES },
 
-{ {".ic",		"S*"},			P_S,			N_SETIC },
+{ {".org",		"S*"},			P_S,			N_SETIC },
 { {"",			"F*"},			P_F,			N_ERR },
 { {"@",			"ALL*"},		P_ALL,			N_ERR },
 { {"",			"NAME*"},		P_NAME,			N_ERR },

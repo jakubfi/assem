@@ -11,18 +11,13 @@ ADD_DEFINITIONS(-Wall -std=c99 -D_XOPEN_SOURCE=700 -O2 -DASSEM_VERSION="${ASSEM_
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_BINARY_DIR})
 
-BISON_TARGET(parser_modern parser_modern.y ${CMAKE_CURRENT_BINARY_DIR}/parser_modern.c COMPILE_FLAGS "-p m_yy")
-BISON_TARGET(parser_classic parser_classic.y ${CMAKE_CURRENT_BINARY_DIR}/parser_classic.c COMPILE_FLAGS "-p c_yy")
-FLEX_TARGET(scanner_modern scanner_modern.l ${CMAKE_CURRENT_BINARY_DIR}/scanner_modern.c COMPILE_FLAGS "-P m_yy")
-FLEX_TARGET(scanner_classic scanner_classic.l ${CMAKE_CURRENT_BINARY_DIR}/scanner_classic.c COMPILE_FLAGS "-P c_yy")
-ADD_FLEX_BISON_DEPENDENCY(scanner_modern parser_modern)
-ADD_FLEX_BISON_DEPENDENCY(scanner_classic parser_classic)
+BISON_TARGET(parser parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c)
+FLEX_TARGET(scanner scanner.l ${CMAKE_CURRENT_BINARY_DIR}/scanner.c)
+ADD_FLEX_BISON_DEPENDENCY(scanner parser)
 
-ADD_EXECUTABLE(assem main.c elements.c eval.c keywords.c pprocess.c dict.c nodes.c parsers.c image.c
-${BISON_parser_modern_OUTPUTS}
-${BISON_parser_classic_OUTPUTS}
-${FLEX_scanner_modern_OUTPUTS}
-${FLEX_scanner_classic_OUTPUTS}
+ADD_EXECUTABLE(assem assem.c elements.c eval.c keywords.c pprocess.c dict.c nodes.c image.c
+${BISON_parser_OUTPUTS}
+${FLEX_scanner_OUTPUTS}
 )
 
 install(TARGETS assem RUNTIME DESTINATION bin)

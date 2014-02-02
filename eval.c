@@ -24,7 +24,7 @@
 
 #include "dict.h"
 #include "eval.h"
-#include "parser_modern.h"
+#include "parser.h"
 #include "elements.h"
 #include "keywords.h"
 #include "image.h"

@@ -107,7 +107,8 @@ int pp_eval(char *buf, struct node_t *n)
 			break;
 		case N_NAME:
 		case N_EXLNAME:
-			pos += sprintf(buf+pos, "%s", n->str);
+			if (!strcmp(n->str, "S")) pos += sprintf(buf+pos, ".");
+			else pos += sprintf(buf+pos, "%s", n->str);
 			break;
 		case N_PLUS:
 			pos += pp_eval_2op(buf+pos, "+", n->n1, n->n2);
@@ -267,7 +268,7 @@ int pp_compose_flow(char *buf, struct node_t *n)
 			pos += sprintf(buf+pos, "%s\n", n->str);
 			break;
 		case N_TEXT:
-			pos += sprintf(buf+pos, ".text ");
+			pos += sprintf(buf+pos, ".ascii ");
 			pos += pp_eval(buf+pos, n->n1);
 			break;
 		default:
@@ -287,7 +288,7 @@ int pp_compose_multi(char *buf, struct node_t *n)
 
 	switch (n->type) {
 		case N_STRING:
-			pos += sprintf(buf+pos, ".data \"%s\"", n->str);
+			pos += sprintf(buf+pos, ".word \"%s\"", n->str);
 			break;
 		case N_RES:
 			pos += sprintf(buf+pos, ".res ");
@@ -346,7 +347,6 @@ void preprocess(struct nodelist_t *nl, FILE *ppf)
 	struct node_t *n = nl->head;
 
 	while (n) {
-		//printf("TYPE: %i\n", n->type);
 		if (n->type <= N_EMPTY) {
 			pp_compose_empty(buf, n);
 			fprintf(ppf, "%s", buf);
@@ -363,7 +363,7 @@ void preprocess(struct nodelist_t *nl, FILE *ppf)
 		} else if (n->type <= N_WORD) {
 			fprintf(ppf, "\n0x%04x: ", n->ic);
 			pp_eval(buf, n);
-			fprintf(ppf, "\t%s.data %s", indent, buf);
+			fprintf(ppf, "\t%s.word %s", indent, buf);
 
 		} else if (n->type <= N_MWORD) {
 			fprintf(ppf, "\n0x%04x: ", n->ic);

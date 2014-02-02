@@ -21,7 +21,8 @@
 #include <string.h>
 
 #include "nodes.h"
-#include "parsers.h"
+
+extern int parser_lineno;
 
 // -----------------------------------------------------------------------
 struct norm_t * make_norm(int rc, int rb, struct node_t *n)
