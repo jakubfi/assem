@@ -487,7 +487,7 @@ struct node_t * eval_t_arg(struct node_t *n, int ic, int rel_op)
 
 		// check range
 		if ((jsval < -63) || (jsval > 63)) {
-			ass_error(n->lineno, "Value outside short argument range");
+			ass_error(n->lineno, "Value %i is outside short argument range", jsval);
 			return NULL;
 		}
 
