@@ -178,7 +178,7 @@ echars			[\)\.]
 
 {pragma} {
 	BEGIN(is_id);
-	struct kw_t *pragma = get_pragma(0, yytext);
+	struct kw_t *pragma = get_pragma(1, yytext);
 	if (!pragma) {
 		yyerror("unknown pragma: %s", yytext);
 	} else {

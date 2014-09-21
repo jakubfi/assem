@@ -215,7 +215,7 @@ char * pp_get_pragma(struct node_t *n)
 	struct kw_t *kw = pragmas;
 	while (kw->mnemo[0]) {
 		if (n->type == kw->opcode) {
-			return kw->mnemo[pp_mnemo_sel];
+			return kw->mnemo[0];
 		}
 		kw++;
 	}
@@ -315,7 +315,7 @@ int pp_compose_empty(char *buf, struct node_t *n)
 	switch (n->type) {
 		case N_COMMENT:
 			s = n->str;
-			while (*s == ' ') s++;
+			while (s && (*s == ' ')) s++;
 			pos += sprintf(buf+pos, "\t\t\t/* %s */", s);
 			break;
 		case N_NL:
