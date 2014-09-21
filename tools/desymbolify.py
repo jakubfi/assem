@@ -26,7 +26,7 @@ if len(sys.argv) != 2 or len(sys.argv[1]) != 7:
     print "Where <reg_symbols> is a string of 7 letters which are names for registers r1..r7"
 
 regs = sys.argv[1]
-regmap = { regs[i]:i for i in range(0, 7) }
+regmap = { regs[i]:i+1 for i in range(0, 7) }
 
 delims = re.escape("',&().")
 rec = re.compile(r'([%s])([%s])([%s])' % (delims, regs, delims))
