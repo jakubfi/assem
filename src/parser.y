@@ -25,7 +25,7 @@
 #include "dict.h"
 #include "elements.h"
 
-void yyerror(char *s, ...);
+void yyerror(const char *s, ...);
 int yylex(void);
 int parser_lineno;
 
@@ -250,7 +250,7 @@ maxlist:
 %%
 
 // -----------------------------------------------------------------------
-void yyerror(char *s, ...)
+void yyerror(const char *s, ...)
 {
 	va_list ap;
 	va_start(ap, s);
