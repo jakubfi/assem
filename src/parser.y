@@ -31,6 +31,11 @@ int parser_lineno;
 
 %}
 
+%code requires {
+// there is a P_ALL wait flag in Linux that sometimes gets included...
+#undef P_ALL
+}
+
 %error-verbose
 %locations
 
