@@ -121,7 +121,7 @@ struct kw_t pragmas[] = {
 
 { {".org",		"S*"},			P_S,			N_SETIC },
 { {"",			"F*"},			P_F,			N_ERR },
-{ {"@",			"ALL*"},		P_ALL,			N_ERR },
+{ {"@",			"ALL*"},		P_ALLL,			N_ERR },
 { {"",			"NAME*"},		P_NAME,			N_ERR },
 { {"",			"BA*"},			P_BA,			N_ERR },
 { {"",			"INT*"},		P_INT,			N_ERR },

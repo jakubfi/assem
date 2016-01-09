@@ -31,11 +31,6 @@ int parser_lineno;
 
 %}
 
-%code requires {
-// there is a P_ALL wait flag in Linux that sometimes gets included...
-#undef P_ALL
-}
-
 %error-verbose
 %locations
 
@@ -52,7 +47,7 @@ int parser_lineno;
 %token <val.v> OP_2ARG OP_FD OP_KA1 OP_JS OP_KA2 OP_BRC OP_BLC OP_EXL OP_C OP_SHC OP_S OP_HLT OP_J OP_L OP_G OP_BN OP_NRF
 %token P_PROG P_FINPROG P_SEG P_FINSEG P_MACRO P_FINMACRO
 %token P_DATA P_EQU P_RES
-%token P_S P_F P_ALL P_NAME P_BA P_INT P_OUT P_LAB P_NLAB P_MEM P_OS P_IFUNK P_IFUND P_IFDEF P_FI P_SS P_HS P_MAX P_LEN P_E P_FILE P_TEXT
+%token P_S P_F P_ALLL P_NAME P_BA P_INT P_OUT P_LAB P_NLAB P_MEM P_OS P_IFUNK P_IFUND P_IFDEF P_FI P_SS P_HS P_MAX P_LEN P_E P_FILE P_TEXT
 
 %token YERR;
 
@@ -203,12 +198,12 @@ reg:
 
 vardef:
 	VAR '=' expr '.'			{ $$ = make_nl(mknod_dentry(N_VAR, $1, $3)); }
-	| P_ALL VAR '=' expr '.'	{ $$ = make_nl(mknod_dentry(N_AVAR, $2, $4)); }
+	| P_ALLL VAR '=' expr '.'	{ $$ = make_nl(mknod_dentry(N_AVAR, $2, $4)); }
 	;
 
 label:
 	LABEL ':'					{ $$ = make_nl(mknod_dentry(N_LABEL, $1, NULL)); }
-	| P_ALL LABEL ':'			{ $$ = make_nl(mknod_dentry(N_ALABEL, $2, NULL)); }
+	| P_ALLL LABEL ':'			{ $$ = make_nl(mknod_dentry(N_ALABEL, $2, NULL)); }
 	;
 
 pragma:
