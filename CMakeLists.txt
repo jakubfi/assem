@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.4)
 project(assem C)
 
+include(GNUInstallDirs)
 include(appversion.cmake)
 
 find_package(BISON REQUIRED)

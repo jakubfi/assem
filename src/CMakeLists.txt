@@ -8,6 +8,6 @@ add_executable(assem
 	${FLEX_scanner_OUTPUTS}
 )
 
-install(TARGETS assem RUNTIME DESTINATION bin)
+install(TARGETS assem RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # vim: tabstop=4
