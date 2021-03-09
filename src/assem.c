@@ -31,7 +31,7 @@ int dump_labels = 0;
 char *input_file = NULL;
 char *output_file = NULL;
 
-FILE *yyin;
+extern FILE *yyin;
 int yyparse();
 int yylex_destroy();
 

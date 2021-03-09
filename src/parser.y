@@ -31,7 +31,7 @@ int parser_lineno;
 
 %}
 
-%error-verbose
+%define parse.error verbose
 %locations
 
 %union {
